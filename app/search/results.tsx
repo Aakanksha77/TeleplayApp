@@ -51,24 +51,131 @@ export default function SearchResultsScreen() {
     }
   };
 
+  // Update the SearchResult interface
+  interface SearchResult {
+    id: number;
+    title: string;
+    channelName: string;
+    thumbnailUrl: string;
+    views: string;
+    timeAgo: string;
+    duration?: string;
+  }
+  
+  // Update the renderItem function
   const renderItem = ({ item }: { item: SearchResult }) => (
     <TouchableOpacity
       style={styles.resultCard}
-      onPress={() => router.push(`/channel/${item.id}`)}
+      onPress={() => router.push(`/content/${item.id}`)}
     >
       <Image
-        source={{ uri: item.avatarUrl || 'https://placeholder.com/100' }}
-        style={styles.avatar}
+        source={{ uri: item.thumbnailUrl || 'https://placehold.co/300x200' }}
+        style={styles.thumbnail}
       />
-      <View style={styles.resultInfo}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.bio} numberOfLines={2}>
-          {item.bio}
-        </Text>
+      <View style={styles.videoInfo}>
+        <Text style={styles.videoTitle} numberOfLines={2}>{item.title}</Text>
+        <Text style={styles.channelName}>{item.channelName}</Text>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaText}>{item.views} views</Text>
+          <Text style={styles.dot}>•</Text>
+          <Text style={styles.metaText}>{item.timeAgo}</Text>
+        </View>
       </View>
+      <TouchableOpacity style={styles.menuButton}>
+        <Text style={styles.menuIcon}>⋮</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
-
+  
+  // Update styles
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#ffffff',
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: '#e0e0e0',
+    },
+    backButton: {
+      position: 'absolute',
+      left: 15,
+      padding: 5,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: '#000',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    listContainer: {
+      padding: 15,
+    },
+    resultCard: {
+      flexDirection: 'row',
+      marginBottom: 12,
+      padding: 8,
+    },
+    thumbnail: {
+      width: 160,
+      height: 90,
+      borderRadius: 8,
+      marginRight: 16,
+    },
+    videoInfo: {
+      flex: 1,
+      paddingRight: 8,
+    },
+    videoTitle: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: '#000',
+      marginBottom: 4,
+    },
+    channelName: {
+      fontSize: 14,
+      color: '#606060',
+      marginBottom: 4,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    metaText: {
+      fontSize: 14,
+      color: '#606060',
+    },
+    dot: {
+      color: '#606060',
+      marginHorizontal: 4,
+    },
+    menuButton: {
+      padding: 8,
+      alignSelf: 'flex-start',
+    },
+    menuIcon: {
+      fontSize: 20,
+      color: '#606060',
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingTop: 50,
+    },
+    emptyText: {
+      fontSize: 16,
+      color: '#666',
+    },
+  });
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -98,77 +205,3 @@ export default function SearchResultsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    position: 'absolute',
-    left: 15,
-    padding: 5,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listContainer: {
-    padding: 15,
-  },
-  resultCard: {
-    flexDirection: 'row',
-    padding: 15,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  resultInfo: {
-    flex: 1,
-    marginLeft: 15,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
-    marginBottom: 5,
-  },
-  bio: {
-    fontSize: 14,
-    color: '#666',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 50,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});

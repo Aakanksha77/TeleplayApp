@@ -1,101 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
-  ScrollView,
   TouchableOpacity,
+  Image,
+  FlatList,
 } from 'react-native';
-import { Play, TrendingUp, Clock } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Trash2 } from 'lucide-react-native';
 
 export default function VideoScreen() {
-  const videoCategories = [
-    { title: 'Trending', icon: TrendingUp, count: '2.4K videos' },
-    { title: 'Recently Added', icon: Clock, count: '156 videos' },
-    { title: 'Music Videos', icon: Play, count: '892 videos' },
-  ];
+  const [history, setHistory] = useState<any[]>([]);
+
+  // Load watch history when screen mounts
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const saved = await AsyncStorage.getItem("watchHistory");
+        if (saved) setHistory(JSON.parse(saved));
+      } catch (err) {
+        console.error("Error loading watch history:", err);
+      }
+    };
+    loadHistory();
+  }, []);
+
+  // Remove a video from history
+  const removeFromHistory = async (id: string) => {
+    try {
+      const newHistory = history.filter(h => h.id !== id);
+      setHistory(newHistory);
+      await AsyncStorage.setItem("watchHistory", JSON.stringify(newHistory));
+    } catch (err) {
+      console.error("Error removing video from history:", err);
+    }
+  };
+
+  // Render each video item
+  const renderItem = ({ item }: { item: any }) => (
+    <View style={styles.videoCard}>
+      <Image
+        source={{ uri: item.thumbnail || "https://placehold.co/100x60" }}
+        style={styles.thumbnail}
+      />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.title}>{item.title || "Untitled Video"}</Text>
+        <Text style={styles.time}>
+          Watched on {new Date(item.watchedAt).toLocaleString()}
+        </Text>
+      </View>
+      <TouchableOpacity onPress={() => removeFromHistory(item.id)} style={styles.deleteButton}>
+        <Trash2 size={20} color="#ff4d4f" />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Videos</Text>
-        <Text style={styles.subtitle}>Watch and discover</Text>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {videoCategories.map((category, index) => (
-          <TouchableOpacity key={index} style={styles.categoryCard}>
-            <View style={styles.categoryIcon}>
-              <category.icon size={24} color="#0088cc" strokeWidth={2} />
-            </View>
-            <View style={styles.categoryInfo}>
-              <Text style={styles.categoryTitle}>{category.title}</Text>
-              <Text style={styles.categoryCount}>{category.count}</Text>
-            </View>
-            <Play size={20} color="#8e8e93" strokeWidth={2} />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.header}>Watch History</Text>
+      {history.length === 0 ? (
+        <Text>No videos watched yet</Text>
+      ) : (
+        <FlatList
+          data={history}
+          keyExtractor={(item, index) => item.id + index.toString()}
+          renderItem={renderItem}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0f23',
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#8e8e93',
-    fontWeight: '400',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-  categoryCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#0088cc',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#0088cc',
-  },
-  categoryIcon: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  categoryInfo: {
-    flex: 1,
-  },
-  categoryTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  categoryCount: {
-    fontSize: 14,
-    color: '#8e8e93',
-  },
+  container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+  header: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
+  videoCard: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
+  thumbnail: { width: 100, height: 60, marginRight: 12, borderRadius: 8 },
+  title: { fontSize: 14, fontWeight: "600" },
+  time: { fontSize: 12, color: "#666" },
+  deleteButton: { padding: 8 },
 });

@@ -14,27 +14,64 @@ import { useRouter } from "expo-router";
 import * as SecureStore from 'expo-secure-store';
 import { Play, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 import Constants from 'expo-constants';
+import { addToHistory } from '../util/history';
 
 type Extra = {
   BASE_URL: string;
 };
 const extra = Constants.expoConfig?.extra as Extra;
 
-
 export default function SubscriptionScreen() {
   const BASE_URL = extra.BASE_URL;
   console.log('BASE_URL:', BASE_URL);
-
 
   const router = useRouter();
   const [subscribedChannels, setSubscribedChannels] = useState<any[]>([]);
   const [latestVideos, setLatestVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // --- Video click logic ---
+  const handleVideoClick = async (item: any) => {
+    try {
+      // ✅ Save to history
+    await addToHistory(item);
+
+      const resp = await fetch(`${BASE_URL}/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // TODO: replace with item.magnetLink when available
+          link: item.magnetLink || "" 
+
+          
+            // link: "magnet:?xt=urn:btih:F2390820A6CD31653B5E447E8492AF176F122A97&dn=Oppenheimer+%282023%29+NEW+ENG+1080p.MP4.InfosPack022&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.swateam.org.uk%3A2710%2Fannounce&tr=http%3A%2F%2Ftracker.gbitt.info%3A80%2Fannounce&tr=http%3A%2F%2Ftracker.bt4g.com%3A2095%2Fannounce&tr=http%3A%2F%2Ftracker.files.fm%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker-udp.gbitt.info%3A80%2Fannounce&tr=http%3A%2F%2Fopen.acgnxtracker.com%3A80%2Fannounce&tr=udp%3A%2F%2Fretracker01-msk-virt.corbina.net%3A80%2Fannounce&tr=https%3A%2F%2Ftracker.lilithraws.cf%3A443%2Fannounce&tr=udp%3A%2F%2Ffree.publictracker.xyz%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Fopentracker.i2p.rocks%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.internetwarriors.net%3A1337%2Fannounce&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969%2Fannounce&tr=udp%3A%2F%2Fcoppersurfer.tk%3A6969%2Fannounce&tr=udp%3A%2F%2Ftracker.zer0day.to%3A1337%2Fannounce", 
+          
+        }),
+      });
+
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      if (!data.streamLinks || data.streamLinks.length === 0) {
+        Alert.alert("Error", "No streamable link received from backend");
+        return;
+      }
+
+      const streamUrl = data.streamLinks[0].streamUrl;
+
+      router.push({
+        pathname: "/videoplay/VideoPlayerPage",
+        params: { videoUrl: streamUrl, title: item.title },
+      });
+    } catch (err: any) {
+      console.error("Error starting stream:", err);
+      Alert.alert("Failed", "Could not start stream. Try again.");
+    }
+  };
+
   // Fetch subscriptions + latest videos
   const fetchSubscriptions = async () => {
     try {
-      // const userId = await SecureStore.getItemAsync("userId");
       const userId = await SecureStore.getItemAsync('userId');
       console.log("Stored userId after login:", userId);
       if (!userId) {
@@ -56,14 +93,13 @@ export default function SubscriptionScreen() {
       const videos: any[] = [];
       for (const channel of subs) {
         try {
-          const latestResp = await fetch(`${BASE_URL}/content/${channel.id}`);
+          const latestResp = await fetch(`${BASE_URL}/content/${channel.channelId}`);
           if (!latestResp.ok) {
             console.log(`No content for channel ${channel.id}`);
             continue;
           }
           const latestData = await latestResp.json();
           if (latestData.content && latestData.content.length > 0) {
-            // Attach channel name + avatar for UI
             videos.push({
               ...latestData.content[0], // latest video
               channelName: channel.name,
@@ -111,7 +147,6 @@ export default function SubscriptionScreen() {
 
           {subscribedChannels.length === 0 ? (
             <Text style={styles.emptyText}>You haven't subscribed to any channels yet.</Text>
-
           ) : (
             <ScrollView
               horizontal
@@ -127,10 +162,7 @@ export default function SubscriptionScreen() {
                     console.log("Clicked channel Name:", channel.name);
                     router.push(`/channel/${channel.channelId}`);
                   }}
-
-
                 >
-
                   <View style={styles.storyRing}>
                     <Image
                       source={{ uri: channel.avatar || "https://placehold.co/100x100" }}
@@ -141,7 +173,6 @@ export default function SubscriptionScreen() {
                     {channel.name}
                   </Text>
                 </TouchableOpacity>
-
               ))}
             </ScrollView>
           )}
@@ -158,8 +189,11 @@ export default function SubscriptionScreen() {
             <Text style={styles.emptyText}>No videos yet from your subscriptions</Text>
           ) : (
             latestVideos.map((video, index) => (
-              <TouchableOpacity key={index} style={styles.videoCard}>
-
+              <TouchableOpacity 
+                key={index} 
+                style={styles.videoCard}
+                onPress={() => handleVideoClick(video)}   // ✅ Added
+              >
                 {/* Thumbnail */}
                 <View style={styles.thumbnailContainer}>
                   <Image
@@ -194,7 +228,6 @@ export default function SubscriptionScreen() {
         </View>
       </ScrollView>
     </SafeAreaView>
-
   );
 }
 
@@ -301,4 +334,3 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
 });
-
