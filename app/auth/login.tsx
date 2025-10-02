@@ -21,8 +21,6 @@ const extra = Constants.expoConfig?.extra as Extra;
 
 export default function LoginScreen() {
   const BASE_URL = extra.BASE_URL;
-  console.log('BASE_URL:', BASE_URL);
-
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -56,49 +54,40 @@ export default function LoginScreen() {
       });
 
       const result = await response.json();
-      console.log('Login result:', result);
 
       if (response.ok && result.token) {
-        // Store user info + JWT token
         await SecureStore.setItemAsync('userId', String(result.channel.id));
         await SecureStore.setItemAsync('userName', result.name || '');
         await SecureStore.setItemAsync('userEmail', result.channel?.email || '');
-        await SecureStore.setItemAsync('userData', JSON.stringify(result.channel || {})); // Store full user object
+        await SecureStore.setItemAsync('userData', JSON.stringify(result.channel || {}));
         await SecureStore.setItemAsync('userToken', result.token);
 
-        router.replace('/menu'); // Redirect to home/menu
-
-        const storedId = await SecureStore.getItemAsync('userId');
-        console.log("Stored userId after login:", storedId);
-
+        router.replace('/menu');
       } else {
         Alert.alert('Error', result.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login Error:', error);
       Alert.alert('Error', 'Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-
-
-
-
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color="#fff" strokeWidth={2} />
+          <ArrowLeft size={24} color="#000" strokeWidth={2} />
         </TouchableOpacity>
-        <Text style={styles.title}>LOGIN</Text>
+        <Text style={styles.title}>Login</Text>
       </View>
 
+      {/* Content */}
       <View style={styles.content}>
-        <Text style={styles.welcomeTitle}>Welcome Back!</Text>
-        <Text style={styles.welcomeSubtitle}>Sign in to your account</Text>
+        <Text style={styles.welcomeTitle}>Welcome Back</Text>
 
+        {/* Email Input */}
         <View style={styles.inputContainer}>
           <Mail size={20} color="#0088cc" style={styles.icon} />
           <TextInput
@@ -109,9 +98,11 @@ export default function LoginScreen() {
             onChangeText={value => handleInputChange('email', value)}
             keyboardType="email-address"
             autoCapitalize="none"
+            cursorColor="#0088cc"
           />
         </View>
 
+        {/* Password Input */}
         <View style={styles.inputContainer}>
           <Lock size={20} color="#0088cc" style={styles.icon} />
           <TextInput
@@ -121,13 +112,11 @@ export default function LoginScreen() {
             value={formData.password}
             onChangeText={value => handleInputChange('password', value)}
             secureTextEntry
+            cursorColor="#0088cc"
           />
         </View>
 
-        <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
-
+        {/* Login Button */}
         <TouchableOpacity
           style={styles.loginButton}
           onPress={handleLogin}
@@ -140,10 +129,11 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
 
+        {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Text style={styles.footerText}>Don’t have an account?</Text>
           <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-            <Text style={styles.signupLink}>Sign Up</Text>
+            <Text style={styles.signupLink}> Sign Up</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -152,42 +142,38 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: { flex: 1, backgroundColor: '#fff' },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    backgroundColor: '#ffffff',
+    paddingVertical: 35,
+    paddingHorizontal: 20,
   },
-  backButton: { position: 'absolute', left: 15, padding: 5 },
-  title: { color: '#000', fontSize: 20, fontWeight: '700' },
-  content: { flex: 1, padding: 20 },
-  welcomeTitle: { color: '#000', fontSize: 24, fontWeight: '700', marginBottom: 4 },
-  welcomeSubtitle: { color: '#8e8e93', fontSize: 16, marginBottom: 20 },
+  backButton: { marginRight: 10 },
+  title: { color: '#000', fontSize: 20, fontWeight: '600' },
+  content: { flex: 1, paddingHorizontal: 20 },
+  welcomeTitle: { color: '#000', fontSize: 22, fontWeight: '700', marginBottom: 20, textAlign: 'center' },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
+    borderColor: '#ddd',
     borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
     marginBottom: 15,
-    paddingHorizontal: 15,
     height: 50,
   },
-  icon: { marginRight: 10 },
-  input: { flex: 1, color: '#000000', fontSize: 16 },
-  forgotPassword: { alignSelf: 'flex-end', marginBottom: 20 },
-  forgotPasswordText: { color: '#0088cc', fontSize: 14, fontWeight: '500' },
+  icon: { marginRight: 8 },
+  input: { flex: 1, color: '#000', fontSize: 16 },
   loginButton: {
     backgroundColor: '#0088cc',
-    borderRadius: 12,
-    paddingVertical: 15,
+    borderRadius: 10,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 10,
   },
-  loginButtonText: { color: '#fff', fontSize: 18, fontWeight: '700' },
-  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  loginButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 20 },
   footerText: { color: '#8e8e93', fontSize: 14 },
-  signupLink: { color: '#0088cc', fontSize: 14, fontWeight: '500', marginLeft: 4 },
+  signupLink: { color: '#0088cc', fontSize: 14, fontWeight: '600' },
 });

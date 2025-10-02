@@ -53,7 +53,7 @@ export default function ChannelPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, channelId: Number(id) }),
       });
-
+console.log(JSON.stringify({ userId, channelId: Number(id) }));
       if (!resp.ok && resp.status !== 409) throw new Error(`HTTP ${resp.status}`);
       setIsSubscribed(true);
       Alert.alert("Subscribed", "You subscribed successfully.");

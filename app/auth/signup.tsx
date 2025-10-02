@@ -10,7 +10,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { ArrowLeft, User, Mail, Phone, Lock, Shield } from 'lucide-react-native';
+import { ArrowLeft, User, Mail, Phone, Lock, Shield, Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
@@ -22,12 +22,11 @@ const extra = Constants.expoConfig?.extra as Extra;
 
 export default function SignUpScreen() {
   const BASE_URL = extra.BASE_URL;
-  console.log('BASE_URL:', BASE_URL);
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     password: '',
     otp: '',
   });
@@ -37,13 +36,14 @@ export default function SignUpScreen() {
   const [otpVerificationFailed, setOtpVerificationFailed] = useState(false);
   const [timer, setTimer] = useState(0);
   const [canResendOtp, setCanResendOtp] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // ✅ new state
   const router = useRouter();
 
   // Timer effect for OTP resend
-  useEffect(() => {
+  useEffect((): (() => void) => {
     let interval: NodeJS.Timeout | null = null;
     if (otpSent && timer > 0) {
-      interval = setTimeout(() => setTimer(prev => prev - 1), 1000);
+      interval = setInterval(() => setTimer(prev => prev - 1), 1000) as unknown as NodeJS.Timeout;
     } else if (timer === 0 && otpSent) setCanResendOtp(true);
     return () => interval && clearTimeout(interval);
   }, [otpSent, timer]);
@@ -92,7 +92,7 @@ export default function SignUpScreen() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:9898/verifyOTP', {
+      const response = await fetch(`${BASE_URL}/verifyOTP`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, otp: formData.otp }),
@@ -117,28 +117,27 @@ export default function SignUpScreen() {
   };
 
   const handleSignUp = async () => {
-    const { name, email, phone, password } = formData;
-    if (!name || !email || !phone || !password)
+    const { name, email, phoneNumber, password } = formData;
+    if (!name || !email || !phoneNumber || !password)
       return Alert.alert('Error', 'Please fill in all fields');
     if (!isOtpVerified) return Alert.alert('Error', 'Please verify OTP first');
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:9898/user/register', {
+      const response = await fetch(`${BASE_URL}/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, password }),
+        body: JSON.stringify({ name, email, phoneNumber, password }),
       });
 
       const result = await response.json();
 
       if (response.ok && result.token) {
-        // Store user info + JWT token
         await SecureStore.setItemAsync('userName', name);
         await SecureStore.setItemAsync('userEmail', email);
         await SecureStore.setItemAsync('userToken', result.token);
 
-        router.replace('/menu'); // Navigate directly to Menu/Home
+        router.replace('/menu');
       } else {
         Alert.alert('Error', result.message || 'Registration failed');
       }
@@ -169,6 +168,7 @@ export default function SignUpScreen() {
             placeholderTextColor="#8e8e93"
             value={formData.name}
             onChangeText={text => handleInputChange('name', text)}
+            cursorColor="#0088cc"
           />
         </View>
 
@@ -182,6 +182,7 @@ export default function SignUpScreen() {
             value={formData.email}
             onChangeText={text => handleInputChange('email', text)}
             editable={!otpSent}
+            cursorColor="#0088cc"
           />
           {!otpSent && (
             <TouchableOpacity style={styles.otpButton} onPress={sendOTP} disabled={isLoading}>
@@ -203,6 +204,7 @@ export default function SignUpScreen() {
               onChangeText={text => handleInputChange('otp', text)}
               keyboardType="numeric"
               maxLength={6}
+              cursorColor="#0088cc"
             />
             <TouchableOpacity
               style={styles.otpButton}
@@ -223,13 +225,14 @@ export default function SignUpScreen() {
             style={styles.input}
             placeholder="Phone Number"
             placeholderTextColor="#8e8e93"
-            value={formData.phone}
-            onChangeText={text => handleInputChange('phone', text)}
+            value={formData.phoneNumber}
+            onChangeText={text => handleInputChange('phoneNumber', text)}
             keyboardType="phone-pad"
+            cursorColor="#0088cc"
           />
         </View>
 
-        {/* Password Input */}
+        {/* Password Input with Show/Hide Toggle */}
         <View style={styles.inputContainer}>
           <Lock size={20} color="#0088cc" style={styles.icon} />
           <TextInput
@@ -238,8 +241,16 @@ export default function SignUpScreen() {
             placeholderTextColor="#8e8e93"
             value={formData.password}
             onChangeText={text => handleInputChange('password', text)}
-            secureTextEntry
+            secureTextEntry={!showPassword} // ✅ toggle
+            cursorColor="#0088cc"
           />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            {showPassword ? (
+              <EyeOff size={20} color="#0088cc" />
+            ) : (
+              <Eye size={20} color="#0088cc" />
+            )}
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -249,6 +260,15 @@ export default function SignUpScreen() {
         >
           {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.signUpButtonText}>Sign Up</Text>}
         </TouchableOpacity>
+
+        {/* Link to Login */}
+        <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => router.push('/auth/login')}>
+            <Text style={{ color: '#0088cc', fontSize: 16 }}>
+              Already have an account? Log in
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -265,7 +285,7 @@ const styles = StyleSheet.create({
   input: { flex: 1, color: '#000000', fontSize: 16 },
   otpButton: { backgroundColor: '#0088cc', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6, marginLeft: 10 },
   otpButtonText: { color: '#fff', fontWeight: '600', fontSize: 14 },
-  timerText: { color: '#fff', textAlign: 'center', marginBottom: 10 },
+  timerText: { color: '#000', textAlign: 'center', marginBottom: 10 },
   signUpButton: { backgroundColor: '#0088cc', borderRadius: 12, paddingVertical: 15, alignItems: 'center', marginTop: 10 },
   signUpButtonText: { color: '#fff', fontSize: 18, fontWeight: '700' },
   buttonDisabled: { opacity: 0.6 },
