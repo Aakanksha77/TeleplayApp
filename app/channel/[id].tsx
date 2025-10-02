@@ -130,7 +130,8 @@ console.log(JSON.stringify({ userId, channelId: Number(id) }));
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          { link: item.input_link || "" 
+          { 
+            link: item.input_link || "" 
 
           }
         ),
