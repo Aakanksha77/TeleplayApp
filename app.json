@@ -8,6 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "projectId": "af525c89-a5e4-45dd-a6f4-e16245d56bb8",
     "ios": {
       "supportsTablet": true
     },
@@ -29,6 +30,14 @@
     },
     "android": {
       "package": "com.raakanksha.boltexponativewind"
-    }
+    },
+    "extra": {
+      "BASE_URL": "https://api2.teleplay.in",
+      "router": {},
+      "eas": {
+        "projectId": "af525c89-a5e4-45dd-a6f4-e16245d56bb8"
+      }
+    },
+    "owner": "raakanksha"
   }
 }

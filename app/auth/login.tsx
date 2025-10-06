@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { ArrowLeft, Mail, Lock } from 'lucide-react-native';
+import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
@@ -23,13 +23,13 @@ export default function LoginScreen() {
   const BASE_URL = extra.BASE_URL;
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  // Auto-login if token exists
   useEffect(() => {
     const checkToken = async () => {
       const token = await SecureStore.getItemAsync('userToken');
-      if (token) router.replace('/menu'); // Redirect if JWT exists
+      if (token) router.replace('/menu');
     };
     checkToken();
   }, []);
@@ -97,7 +97,6 @@ export default function LoginScreen() {
             value={formData.email}
             onChangeText={value => handleInputChange('email', value)}
             keyboardType="email-address"
-            autoCapitalize="none"
             cursorColor="#0088cc"
           />
         </View>
@@ -111,9 +110,17 @@ export default function LoginScreen() {
             placeholderTextColor="#8e8e93"
             value={formData.password}
             onChangeText={value => handleInputChange('password', value)}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             cursorColor="#0088cc"
+            
           />
+          <TouchableOpacity onPress={() => setShowPassword(prev => !prev)}>
+            {showPassword ? (
+              <EyeOff size={20} color="#8e8e93" />
+            ) : (
+              <Eye size={20} color="#8e8e93" />
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Login Button */}
@@ -164,7 +171,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   icon: { marginRight: 8 },
-  input: { flex: 1, color: '#000', fontSize: 16 },
+  input: { flex: 1, color: '#fff', fontSize: 16 },
   loginButton: {
     backgroundColor: '#0088cc',
     borderRadius: 10,
