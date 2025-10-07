@@ -15,8 +15,11 @@ import * as SecureStore from 'expo-secure-store';
 import { Play, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 import Constants from 'expo-constants';
 import { addToHistory } from '../util/history';
+<<<<<<< HEAD
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 
 type Extra = {
   BASE_URL: string;
@@ -59,6 +62,7 @@ export default function SubscriptionScreen() {
         return;
       }
 
+<<<<<<< HEAD
       
       const streamUrl = data.streamLinks[0].streamUrl;
       console.log('Stream URL from backend:', streamUrl);
@@ -69,6 +73,14 @@ export default function SubscriptionScreen() {
         params: { videoUrl: encodedStreamUrl, title: item.title },
       });
      
+=======
+      const streamUrl = data.streamLinks[0].streamUrl;
+
+      router.push({
+        pathname: "/videoplay/VideoPlayerPage",
+        params: { videoUrl: streamUrl, title: item.title },
+      });
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
     } catch (err: any) {
       console.error("Error starting stream:", err);
       Alert.alert("Failed", "Could not start stream. Try again.");
@@ -76,7 +88,11 @@ export default function SubscriptionScreen() {
   };
 
   // Fetch subscriptions + latest videos
+<<<<<<< HEAD
   const fetchSubscriptions1 = async () => {
+=======
+  const fetchSubscriptions = async () => {
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
     try {
       const userId = await SecureStore.getItemAsync('userId');
       console.log("Stored userId after login:", userId);
@@ -126,6 +142,7 @@ export default function SubscriptionScreen() {
     }
   };
 
+<<<<<<< HEAD
 
 
 
@@ -183,10 +200,13 @@ export default function SubscriptionScreen() {
 
 
 
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   useEffect(() => {
     fetchSubscriptions();
   }, []);
 
+<<<<<<< HEAD
 
   useFocusEffect(
   useCallback(() => {
@@ -195,6 +215,8 @@ export default function SubscriptionScreen() {
 );
 
 
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>

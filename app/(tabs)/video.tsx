@@ -74,7 +74,11 @@ export default function VideoScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: "#fff" },
+<<<<<<< HEAD
   header: { fontSize: 20, fontWeight: "bold", marginBottom: 16, marginTop: 35 },
+=======
+  header: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   videoCard: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
   thumbnail: { width: 100, height: 60, marginRight: 12, borderRadius: 8 },
   title: { fontSize: 14, fontWeight: "600" },

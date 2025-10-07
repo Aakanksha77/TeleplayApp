@@ -67,6 +67,7 @@ export default function SignUpScreen() {
         body: JSON.stringify({ email: formData.email }),
       });
 
+<<<<<<< HEAD
       // Check if response is JSON before parsing
       const contentType = response.headers.get('content-type');
       let result;
@@ -79,6 +80,9 @@ export default function SignUpScreen() {
         console.log('Non-JSON response:', textResponse);
         throw new Error('Server returned non-JSON response');
       }
+=======
+      const result = await response.json();
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 
       if (response.ok) {
         setOtpSent(true);
@@ -163,6 +167,7 @@ export default function SignUpScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+<<<<<<< HEAD
         <TouchableOpacity
   style={styles.backButton}
   onPress={() => {
@@ -176,6 +181,11 @@ export default function SignUpScreen() {
   <ArrowLeft size={24} color="#000" strokeWidth={2} />
 </TouchableOpacity>
 
+=======
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <ArrowLeft size={24} color="#fff" strokeWidth={2} />
+        </TouchableOpacity>
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
         <Text style={styles.title}>SIGN UP</Text>
       </View>
 

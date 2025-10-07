@@ -6,13 +6,19 @@ import Constants from 'expo-constants';
 import { addToHistory } from '../util/history';
 type Extra = {
   BASE_URL: string;
+<<<<<<< HEAD
   BASE_URL_STEARMING: string;
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 };
 const extra = Constants.expoConfig?.extra as Extra;
 
 export default function ChannelPage() {
   const BASE_URL = extra.BASE_URL;
+<<<<<<< HEAD
   const BASE_URL_STEARMING = extra.BASE_URL_STEARMING;
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   const router = useRouter();
   const params = useLocalSearchParams();
   const id = params.id as string;
@@ -128,7 +134,11 @@ console.log(JSON.stringify({ userId, channelId: Number(id) }));
       // ✅ Save to history
     await addToHistory(item);
 
+<<<<<<< HEAD
       const resp = await fetch(`${BASE_URL_STEARMING}/stream`, {
+=======
+      const resp = await fetch(`${BASE_URL}/stream`, {
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(

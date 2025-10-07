@@ -1,9 +1,14 @@
 // app/videoplay/VideoPlayerPage.tsx
 import React, { useEffect, useRef, useState } from "react";
+<<<<<<< HEAD
 import { Audio, Video as ExpoVideo, VideoFullscreenUpdate } from "expo-av";
 import * as ScreenOrientation from "expo-screen-orientation";
 import * as FileSystem from 'expo-file-system/legacy';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+=======
+import { Audio, Video as ExpoVideo, VideoFullscreenUpdate } from "expo-av"; // <- use expo-av (named export)
+import * as ScreenOrientation from "expo-screen-orientation";
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 import {
   View,
   Text,
@@ -11,15 +16,23 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
+<<<<<<< HEAD
   ActivityIndicator,
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+=======
+} from "react-native";
+import { useLocalSearchParams } from "expo-router";
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function VideoPlayerPage() {
   const params = useLocalSearchParams();
+<<<<<<< HEAD
   const router = useRouter();
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   const videoRef = useRef<ExpoVideo | null>(null);
 
   const videoUrl = (params.videoUrl as string) || "";
@@ -29,10 +42,13 @@ export default function VideoPlayerPage() {
   const format = (params.format as string) || "N/A";
 
   const [expanded, setExpanded] = useState(false);
+<<<<<<< HEAD
   const [isBuffering, setIsBuffering] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const downloadRef = useRef<FileSystem.DownloadResumable | null>(null);
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 
   const screenWidth = Dimensions.get("window").width;
   const videoWidth = Math.min(screenWidth * 0.95, 1000);
@@ -50,7 +66,11 @@ export default function VideoPlayerPage() {
       (async () => {
         try {
           await videoRef.current?.pauseAsync?.();
+<<<<<<< HEAD
         } catch {}
+=======
+        } catch { }
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
       })();
     };
   }, []);
@@ -73,6 +93,7 @@ export default function VideoPlayerPage() {
     }
   };
 
+<<<<<<< HEAD
   // Download video
   const downloadVideo = async () => {
     try {
@@ -135,6 +156,8 @@ export default function VideoPlayerPage() {
     }
   };
 
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   const VideoComponent: any = ExpoVideo;
   if (!VideoComponent) {
     return (
@@ -172,6 +195,7 @@ export default function VideoPlayerPage() {
             onError={(e: any) => console.warn("Video error:", e)}
             onFullscreenUpdate={async ({ fullscreenUpdate }: any) => {
               if (fullscreenUpdate === VideoFullscreenUpdate.PLAYER_DID_PRESENT) {
+<<<<<<< HEAD
                 await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
               } else if (fullscreenUpdate === VideoFullscreenUpdate.PLAYER_WILL_DISMISS) {
                 await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
@@ -189,6 +213,21 @@ export default function VideoPlayerPage() {
               <Text style={{ color: "#fff", marginTop: 8 }}>Loading video...</Text>
             </View>
           )}
+=======
+                // Entering fullscreen → lock to landscape
+                await ScreenOrientation.lockAsync(
+                  ScreenOrientation.OrientationLock.LANDSCAPE
+                );
+              } else if (fullscreenUpdate === VideoFullscreenUpdate.PLAYER_WILL_DISMISS) {
+                // Exiting fullscreen → unlock back to portrait
+                await ScreenOrientation.lockAsync(
+                  ScreenOrientation.OrientationLock.PORTRAIT_UP
+                );
+              }
+            }}
+          />
+
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 
           {/* Tap zones for seek */}
           <View style={styles.overlay}>
@@ -196,11 +235,19 @@ export default function VideoPlayerPage() {
               style={styles.leftZone}
               activeOpacity={0.3}
               onPress={() => seekVideo("backward")}
+<<<<<<< HEAD
             />
+=======
+            >
+              {/* <Text style={styles.seekText}>⏪ -10s</Text> */}
+            </TouchableOpacity>
+
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
             <TouchableOpacity
               style={styles.rightZone}
               activeOpacity={0.3}
               onPress={() => seekVideo("forward")}
+<<<<<<< HEAD
             />
           </View>
         </View>
@@ -248,6 +295,12 @@ export default function VideoPlayerPage() {
               <Text style={{ color: "#fff", fontWeight: "600" }}>Download Video</Text>
             </TouchableOpacity>
           )}
+=======
+            >
+              {/* <Text style={styles.seekText}>⏪ +10s</Text> */}
+            </TouchableOpacity>
+          </View>
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
         </View>
 
         {/* Info card */}
@@ -295,8 +348,24 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+<<<<<<< HEAD
   leftZone: { flex: 1, justifyContent: "center", alignItems: "flex-start", paddingLeft: 20 },
   rightZone: { flex: 1, justifyContent: "center", alignItems: "flex-end", paddingRight: 20 },
+=======
+  leftZone: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingLeft: 20,
+  },
+  rightZone: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: 20,
+  },
+  seekText: { color: "white", fontSize: 14, opacity: 0.7 },
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
   infoCard: {
     backgroundColor: "#1c1c1c",
     borderTopLeftRadius: 20,
@@ -319,10 +388,13 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#111",
   },
+<<<<<<< HEAD
   bufferOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
+=======
+>>>>>>> 9f4fdb4c1dc6caddaeab46234ab917af46291de6
 });
