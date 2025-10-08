@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Bell, MoreVertical } from 'lucide-react-native';
+import { MoreVertical } from 'lucide-react-native';
 
 // Placeholder for a VideoCard component, assuming it exists or will be created
 const VideoCard = ({ video }: { video: any }) => (

@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Search, Video, CreditCard, Menu } from 'lucide-react-native';
-import { Text, TouchableOpacity, Animated } from 'react-native';
+import { TouchableOpacity, Animated, GestureResponderEvent } from 'react-native';
 import { useRef, useEffect } from 'react';
 
 function CustomTabBarButton({
@@ -11,7 +11,7 @@ function CustomTabBarButton({
 }: {
   accessibilityState?: { selected?: boolean }, // <- make it optional
   children: (color: string) => React.ReactNode,
-  onPress: () => void,
+  onPress: (e: GestureResponderEvent) => void,
   label: string
 }) {
   const focused = accessibilityState?.selected ?? false; // ✅ safe access
@@ -94,7 +94,7 @@ export default function TabLayout() {
         options={{
           title: 'Search',
           tabBarButton: (props) => (
-            <CustomTabBarButton {...props} label="Search">
+            <CustomTabBarButton {...props} label="Search" onPress={props.onPress!}>
               {(color) => <Search size={22} color={color} />}
             </CustomTabBarButton>
           ),
@@ -105,7 +105,7 @@ export default function TabLayout() {
         options={{
           title: 'Video',
           tabBarButton: (props) => (
-            <CustomTabBarButton {...props} label="History">
+            <CustomTabBarButton {...props} label="History" onPress={props.onPress!}>
               {(color) => <Video size={22} color={color} />}
             </CustomTabBarButton>
           ),
@@ -116,7 +116,7 @@ export default function TabLayout() {
         options={{
           title: 'Subscriptions',
           tabBarButton: (props) => (
-            <CustomTabBarButton {...props} label="Subscriptions">
+            <CustomTabBarButton {...props} label="Subscriptions" onPress={props.onPress!}>
               {(color) => <CreditCard size={22} color={color} />}
             </CustomTabBarButton>
           ),
@@ -127,7 +127,7 @@ export default function TabLayout() {
         options={{
           title: 'Menu',
           tabBarButton: (props) => (
-            <CustomTabBarButton {...props} label="Menu">
+            <CustomTabBarButton {...props} label="Menu" onPress={props.onPress!}>
               {(color) => <Menu size={22} color={color} />}
             </CustomTabBarButton>
           ),

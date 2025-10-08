@@ -60,13 +60,38 @@ export default function SearchResultsScreen() {
     views: string;
     timeAgo: string;
     duration?: string;
+    videoUrl?: string;
+    description?: string;
+    language?: string;
+    format?: string;
   }
   
+  const fetchVideoDetailsAndNavigate = async (videoId: number) => {
+    try {
+      const response = await fetch(`${BASE_URL}/video/${videoId}`);
+      const videoDetails = await response.json();
+      router.push({
+        pathname: "/videoplay/VideoPlayerPage",
+        params: {
+          videoUrl: videoDetails.videoUrl,
+          title: videoDetails.title,
+          description: videoDetails.description,
+          language: videoDetails.language,
+          format: videoDetails.format,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching video details:", error);
+      // Optionally, show an alert to the user
+      // Alert.alert("Error", "Could not load video details.");
+    }
+  };
+
   // Update the renderItem function
   const renderItem = ({ item }: { item: SearchResult }) => (
     <TouchableOpacity
       style={styles.resultCard}
-      onPress={() => router.push(`/content/${item.id}`)}
+      onPress={() => fetchVideoDetailsAndNavigate(item.id)}
     >
       <Image
         source={{ uri: item.thumbnailUrl || 'https://placehold.co/300x200' }}

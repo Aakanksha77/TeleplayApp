@@ -9,7 +9,6 @@ import {
   Animated,
   Easing,
   Image,
-  Modal,
   ScrollView,
   Alert,
 } from 'react-native';
@@ -33,7 +32,7 @@ export default function HomeScreen() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isVideoMode, setIsVideoMode] = useState(false);
   const [toggleAnimation] = useState(new Animated.Value(0));
-  const [highlightedChannel, setHighlightedChannel] = useState<string | null>(null);
+  const [highlightedChannel, setHighlightedChannel] = useState<number | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [channels, setChannels] = useState<any[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -108,6 +107,7 @@ export default function HomeScreen() {
     channel_id: number;
     channel_name: string;
     username?: string;
+    upload_id?: number;
   }
 
   const handleSearch = async (query: string) => {

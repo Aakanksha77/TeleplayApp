@@ -128,7 +128,7 @@ console.log(JSON.stringify({ userId, channelId: Number(id) }));
       // ✅ Save to history
     await addToHistory(item);
 
-      const resp = await fetch(`${BASE_URL_STEARMING}/stream`, {
+      const resp = await fetch(`https://sweptback-nickie-lately.ngrok-free.dev/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(

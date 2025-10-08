@@ -42,7 +42,7 @@ export default function AddLinkScreen() {
     await addToHistory(item);
 
     // 🔥 Send magnet link to backend
-    const resp = await fetch(`http://192.168.1.37:9898/stream`, {
+    const resp = await fetch(`https://sweptback-nickie-lately.ngrok-free.dev/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ link: inputLink }),
